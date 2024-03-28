@@ -1,0 +1,8 @@
+
+CT Scan Data:
+Total Agaston CAC Score: 1
+LM: 2
+LAD: 1
+LCX: 1
+RCS: 2
+PDA: 1
