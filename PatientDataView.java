@@ -1,78 +1,56 @@
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-//Patient Side View after log in
 public class PatientDataView {
-    private Stage primaryStage;
-    private String patientId;
+    private String firstName;
+    private String lastName;
 
-    public PatientDataView(Stage primaryStage, String patientId) {
-        this.primaryStage = primaryStage;
-        this.patientId = patientId;
+    public PatientDataView(String firstName, String lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
-    public Scene getScene() {
+    public Scene getScene(Stage primaryStage) {
         BorderPane root = new BorderPane();
 
-        //read patient info file to get patient's name
-        String patientInfoFileName = patientId + "_PatientInfo.txt";
-        File infoFile = new File("/Users/apple/cse240/360/HW4/patient_info/", patientInfoFileName);
-        String patientName = "Patient";
+        // Create the TabPane
+        TabPane tabPane = new TabPane();
+        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 
-        if (infoFile.exists()) {
-            try (BufferedReader reader = new BufferedReader(new FileReader(infoFile))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                	//checking if line starts with the string, it is followed by patient name
-                    if (line.startsWith("First Name:")) {
-                        patientName = line.substring(line.indexOf(":") + 2);
-                        break;
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        // Create and add tabs to the TabPane
+        Tab personalInfoTab = new Tab("Personal Information");
+        PersonalInformation personalInformation = new PersonalInformation(firstName, lastName);
+        personalInfoTab.setContent(personalInformation.getContent(primaryStage));
 
-        //greet patient using name
-        Label greetingLabel = new Label("Hello " + patientName + "!");
-        greetingLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+        Tab appointmentSummaryTab = new Tab("Appointment Summary");
+        AppointmentSummary appointmentSummary = new AppointmentSummary(firstName, lastName);
+        appointmentSummaryTab.setContent(appointmentSummary.getContent(primaryStage));
 
-        //display patient ID
-        //Label patientIdLabel = new Label("Patient ID: " + patientId);
+        Tab insuranceInfoTab = new Tab("Insurance Information");
+        InsuranceInformation insuranceInformation = new InsuranceInformation(firstName, lastName);
+        insuranceInfoTab.setContent(insuranceInformation.getContent(primaryStage));
 
-        //read patient result file
-        String resultFileName = patientId + "_PatientResult.txt";
-        File resultFile = new File("/Users/apple/cse240/360/HW4/patient_result/", resultFileName);
+        Tab pharmacyInfoTab = new Tab("Pharmacy Information");
+        PharmacyInformation pharmacyInformation = new PharmacyInformation(firstName, lastName);
+        pharmacyInfoTab.setContent(pharmacyInformation.getContent(primaryStage));
 
-        VBox dataView = new VBox(20, greetingLabel);
-        dataView.setStyle("-fx-padding: 20px;");
+        
+        Tab healthResourcesTab = new Tab("Health and Wellness Resources");
+        HealthWellnessResources healthWellnessResources = new HealthWellnessResources(firstName, lastName);
+        healthResourcesTab.setContent(healthWellnessResources.getContent(primaryStage));
 
-        if (resultFile.exists()) {
-            try (BufferedReader reader = new BufferedReader(new FileReader(resultFile))) {
-                String line;
-                //read until file is empty / end of file is reached
-                while ((line = reader.readLine()) != null) {
-                    Label resultLabel = new Label(line);
-                    dataView.getChildren().add(resultLabel);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            Label noResultLabel = new Label("No result found for this patient.");
-            dataView.getChildren().add(noResultLabel);
-        }
+        // Add tabs to the tab pane
+        tabPane.getTabs().addAll(personalInfoTab, appointmentSummaryTab, insuranceInfoTab, pharmacyInfoTab, healthResourcesTab);
 
-        root.setCenter(dataView);
+        // Set the TabPane to the top of the BorderPane
+        root.setTop(tabPane);
 
-        return new Scene(root, 900, 600);
+        // Create and return the scene
+        Scene scene = new Scene(root, 900, 600);
+        return scene;
     }
 }

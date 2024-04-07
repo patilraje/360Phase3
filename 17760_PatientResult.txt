@@ -4,5 +4,5 @@ Total Agaston CAC Score: 1
 LM: 1
 LAD: 2
 LCX: 1
-RCS: 1
+RCS: 2
 PDA: 1

@@ -24,25 +24,19 @@ public class PatientIntakeForm {
     public Scene getScene() {
         BorderPane root = new BorderPane();
 
-        //patient intake Form Label
+        // Patient intake Form Label
         Label titleLabel = new Label("Patient Intake Form");
         titleLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
 
-        //patient information fields
+        // Patient information fields
         Label firstNameLabel = new Label("First Name:");
         TextField firstNameField = new TextField();
 
         Label lastNameLabel = new Label("Last Name:");
         TextField lastNameField = new TextField();
 
-        Label emailLabel = new Label("Email:");
-        TextField emailField = new TextField();
-
-        Label phoneLabel = new Label("Phone:");
-        TextField phoneField = new TextField();
-
-        Label insuranceLabel = new Label("Insurance ID:");
-        TextField insuranceField = new TextField();
+        Label dateOfBirthLabel = new Label("Date of Birth:");
+        TextField dateOfBirthField = new TextField();
 
         GridPane formGrid = new GridPane();
         formGrid.setAlignment(Pos.CENTER);
@@ -50,39 +44,16 @@ public class PatientIntakeForm {
         formGrid.setVgap(10);
         formGrid.addRow(0, firstNameLabel, firstNameField);
         formGrid.addRow(1, lastNameLabel, lastNameField);
-        formGrid.addRow(2, emailLabel, emailField);
-        formGrid.addRow(3, phoneLabel, phoneField);
-        formGrid.addRow(4, insuranceLabel, insuranceField);
+        formGrid.addRow(2, dateOfBirthLabel, dateOfBirthField);
 
-        //save button
+        // Save button
         Button saveButton = new Button("Save");
         saveButton.setOnAction(e -> {
-            //get user input
-            String firstName = firstNameField.getText();
-            String lastName = lastNameField.getText();
-            String email = emailField.getText();
-            String phone = phoneField.getText();
-            String insuranceId = insuranceField.getText();
-
-            //creating a unique patient ID (5 digits)
-            String patientId = generatePatientId();
-
-            //creating file name based on the patient ID
-            String fileName = patientId + "_PatientInfo.txt";
-
-            // Specify the directory path where you want to store the text files
-            String directoryPath = "/Users/apple/cse240/360/HW4/patient_info/";
-            File directory = new File(directoryPath);
-            directory.mkdir(); //create the directory if it doesn't exist
-
-            //create the full file path
-            String filePath = directoryPath + fileName;
-
-            //write patient information to the file
-            writeToFile(filePath, firstName, lastName, email, phone, insuranceId, patientId);
+            savePatientInfo(firstNameField.getText(), lastNameField.getText(), dateOfBirthField.getText());
+            clearFields(firstNameField, lastNameField, dateOfBirthField);
         });
 
-        //back Button
+        // Back Button
         Button backButton = new Button("Back");
         backButton.setOnAction(e -> {
             Stage stage = (Stage) backButton.getScene().getWindow();
@@ -101,25 +72,42 @@ public class PatientIntakeForm {
         return new Scene(root, 600, 400);
     }
 
-    //this method generates a unique patient ID (5 digits)
-    private String generatePatientId() {
-        //a simple random 5 digit ID is generated
-        return String.format("%05d", (int) (Math.random() * 100000));
+    private void savePatientInfo(String firstName, String lastName, String dateOfBirth) {
+        // Generate file name based on first name and last name
+        String fileName = firstName.toLowerCase() + "_" + lastName.toLowerCase() + "_patientinfo.txt";
+
+        // Specify the directory path where patient information files are stored
+        String directoryPath = "/Users/apple/cse240/360/HW4/patient_info/";
+        File directory = new File(directoryPath);
+        directory.mkdir(); // Create the directory if it doesn't exist
+
+        // Create the full file path
+        String filePath = directoryPath + fileName;
+
+        // Write patient information to the file
+        writeToFile(filePath, firstName, lastName, dateOfBirth);
+        System.out.println("Patient information saved to file: " + filePath);
+
+        // You might want to provide feedback to the user here, confirming that the
+        // information has been successfully saved
     }
 
-    //method to write patient information to a text file
-    private void writeToFile(String filePath, String firstName, String lastName, String email, String phone, String insuranceId, String patientID) {
+    // Method to write patient information to a text file
+    private void writeToFile(String filePath, String firstName, String lastName, String dateOfBirth) {
         try (FileWriter writer = new FileWriter(filePath)) {
-        	writer.write("Patient ID: " + patientID + "\n");
             writer.write("First Name: " + firstName + "\n");
             writer.write("Last Name: " + lastName + "\n");
-            writer.write("Email: " + email + "\n");
-            writer.write("Phone: " + phone + "\n");
-            writer.write("Insurance ID: " + insuranceId + "\n");
-            System.out.println("Patient information saved to file: " + filePath);
+            writer.write("Date of Birth: " + dateOfBirth + "\n");
         } catch (IOException ex) {
             System.out.println("An error occurred while writing to the file.");
             ex.printStackTrace();
+        }
+    }
+
+    // Method to clear input fields after saving patient information
+    private void clearFields(TextField... fields) {
+        for (TextField field : fields) {
+            field.clear();
         }
     }
 }
